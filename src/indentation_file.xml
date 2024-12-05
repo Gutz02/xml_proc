@@ -1,0 +1,8 @@
+<root>
+    <head>
+        <title author="John Doe" version="1.0">Main Chapter</title>
+        <paragraph>
+            Here is a paragraph with predefined characters: &lt; &gt; &amp; &apos; &quot;
+        </paragraph>
+    </head>
+</root>
