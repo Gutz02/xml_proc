@@ -46,9 +46,10 @@ pub fn get_inner_element(line: &String) -> String{
 
 pub fn trim_line(line: &String) -> String {
     line.replace("?", "")
+        .replace("/>", "")
+        .replace("</", "")
         .replace("<", "") 
         .replace(">", "")
-        .replace("/", "")
         .to_string()
 }
 
