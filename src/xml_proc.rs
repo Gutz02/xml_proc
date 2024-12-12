@@ -146,8 +146,6 @@ fn process_node(line: &String, processing_nodes: &mut Vec<(String,usize)>, all_n
 
     match processing_nodes.last() {
         Some(current) => {
-            println!("{},{}", current.0, node_name);
-            println!("{line}");
             if current.0 == node_name{
                 processing_nodes.pop();
                 return;
@@ -167,7 +165,7 @@ fn process_node(line: &String, processing_nodes: &mut Vec<(String,usize)>, all_n
     let attributes = find_attributes(&trimed_first_tag);    
 
     if !line_remaining.is_empty() {
-        inner_element = extract_inner_element(&line_remaining);
+        inner_element = extract_inner_element(&line_remaining, &node_name);
         processing_nodes.pop();
     }
 
@@ -224,8 +222,9 @@ fn calculate_indentation(line: &String) -> usize {
         .unwrap_or(0)
 }
 
-fn extract_inner_element(line: &String) -> Option<String> {
-    line.find("</").map(|index| line[..index].to_string())
+fn extract_inner_element(line: &String, node_name : &String) -> Option<String> {
+    let closing_tag = format!("</{node_name}");
+    line.find(&closing_tag).map(|index| line[..index].to_string())
 }
 
 
@@ -252,11 +251,6 @@ mod tests {
             "    </body>".to_string(),
             "</root>".to_string(),
         ]
-    }
-
-    #[test] // I use this just to test my code!
-    fn test_function(){
-
     }
 
     #[test]
@@ -418,5 +412,19 @@ mod tests {
         assert_eq!(id_to_node.get(&3).unwrap().get_name(), "paragraph");
         assert_eq!(id_to_node.get(&7).unwrap().get_name(), "body");
         assert_eq!(id_to_node.get(&8).unwrap().get_name(), "h3");
+    }
+
+    #[test]
+    fn test_contents_with_formating_node(){
+        let example_nodes : Vec<String> = vec![
+            "<root>".to_string(),
+            "   <p>“There <em>are</em> some angels without wings, little Grissel. Not many I admit; but I have known a few.”</p>".to_string(),
+            "</root>".to_string()
+        ];
+
+        let result = process_line_list(&example_nodes);
+        let node_for = &result[1];
+        assert_eq!(node_for.get_id(), 1);
+        assert_eq!(node_for.get_inner_element(), "“There <em>are</em> some angels without wings, little Grissel. Not many I admit; but I have known a few.”");
     }
 }
